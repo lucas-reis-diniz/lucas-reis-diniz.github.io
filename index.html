@@ -226,6 +226,156 @@ body.intro-locked {
   .intro-hud-bl, .intro-hud-br { bottom: 1.2rem; }
 }
 
+/* ================ CLOUD REVEAL TRANSITION ================ */
+.cloud-reveal {
+  position: fixed;
+  inset: 0;
+  z-index: 99998;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  overflow: hidden;
+  background: radial-gradient(ellipse at center,
+    rgba(255,255,255,1) 0%,
+    rgba(230,242,250,0.95) 50%,
+    rgba(200,225,240,0.85) 100%);
+}
+.cloud-reveal.active {
+  visibility: visible;
+  animation: cloudRevealFade 2.1s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+@keyframes cloudRevealFade {
+  0%   { opacity: 0; }
+  20%  { opacity: 1; }
+  70%  { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
+}
+
+/* Warm light from above as we exit the clouds */
+.reveal-light {
+  position: absolute;
+  top: -30%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120vw;
+  height: 100vh;
+  background: radial-gradient(ellipse at center top,
+    rgba(255, 245, 210, 0.85) 0%,
+    rgba(255, 230, 180, 0.4) 30%,
+    transparent 65%);
+  filter: blur(20px);
+  opacity: 0;
+}
+.cloud-reveal.active .reveal-light {
+  animation: lightBreak 2.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes lightBreak {
+  0%   { opacity: 0; transform: translateX(-50%) scale(0.6); }
+  40%  { opacity: 1; transform: translateX(-50%) scale(1); }
+  80%  { opacity: 0.8; transform: translateX(-50%) scale(1.4); }
+  100% { opacity: 0; transform: translateX(-50%) scale(1.8); }
+}
+
+/* Cloud layers at 3 depths with different motion */
+.cloud-layer {
+  position: absolute;
+  inset: 0;
+  will-change: transform, opacity;
+}
+.reveal-cloud {
+  position: absolute;
+  filter: drop-shadow(0 10px 30px rgba(180, 200, 220, 0.3));
+  will-change: transform, opacity;
+}
+
+/* Back layer - big, soft, slow */
+.cloud-layer-back .rc-1 {
+  top: 10%; left: -15%;
+  width: 75vw;
+  opacity: 0.9;
+}
+.cloud-layer-back .rc-2 {
+  bottom: 5%; right: -10%;
+  width: 80vw;
+  opacity: 0.95;
+}
+.cloud-reveal.active .cloud-layer-back .rc-1 {
+  animation: cloudPartLeftBack 2.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.cloud-reveal.active .cloud-layer-back .rc-2 {
+  animation: cloudPartRightBack 2.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Mid layer */
+.cloud-layer-mid .rc-3 {
+  top: 25%; left: -25%;
+  width: 90vw;
+}
+.cloud-layer-mid .rc-4 {
+  bottom: 15%; right: -20%;
+  width: 85vw;
+}
+.cloud-reveal.active .cloud-layer-mid .rc-3 {
+  animation: cloudPartLeftMid 2.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.cloud-reveal.active .cloud-layer-mid .rc-4 {
+  animation: cloudPartRightMid 2.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Front layer - biggest, fastest to clear */
+.cloud-layer-front .rc-5 {
+  top: 40%; left: -35%;
+  width: 110vw;
+}
+.cloud-layer-front .rc-6 {
+  top: 30%; right: -40%;
+  width: 115vw;
+}
+.cloud-reveal.active .cloud-layer-front .rc-5 {
+  animation: cloudPartLeftFront 2.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.cloud-reveal.active .cloud-layer-front .rc-6 {
+  animation: cloudPartRightFront 2.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Parting animations — clouds rush OUT of the viewport, scaling up as we fly through */
+@keyframes cloudPartLeftBack {
+  0%   { transform: translate(0, 0) scale(0.7); opacity: 0; }
+  25%  { transform: translate(0, 0) scale(1); opacity: 0.9; }
+  60%  { transform: translate(-15%, -5%) scale(1.15); opacity: 0.85; }
+  100% { transform: translate(-80%, -20%) scale(1.8); opacity: 0; }
+}
+@keyframes cloudPartRightBack {
+  0%   { transform: translate(0, 0) scale(0.7); opacity: 0; }
+  25%  { transform: translate(0, 0) scale(1); opacity: 0.95; }
+  60%  { transform: translate(20%, 8%) scale(1.2); opacity: 0.85; }
+  100% { transform: translate(85%, 25%) scale(1.9); opacity: 0; }
+}
+@keyframes cloudPartLeftMid {
+  0%   { transform: translate(0, 0) scale(0.8); opacity: 0; }
+  20%  { transform: translate(0, 0) scale(1); opacity: 0.95; }
+  55%  { transform: translate(-25%, 5%) scale(1.3); opacity: 0.9; }
+  100% { transform: translate(-110%, 15%) scale(2.2); opacity: 0; }
+}
+@keyframes cloudPartRightMid {
+  0%   { transform: translate(0, 0) scale(0.8); opacity: 0; }
+  20%  { transform: translate(0, 0) scale(1); opacity: 0.95; }
+  55%  { transform: translate(30%, -8%) scale(1.3); opacity: 0.9; }
+  100% { transform: translate(115%, -20%) scale(2.2); opacity: 0; }
+}
+@keyframes cloudPartLeftFront {
+  0%   { transform: translate(0, 0) scale(0.9); opacity: 0; }
+  15%  { transform: translate(-5%, 2%) scale(1.1); opacity: 1; }
+  45%  { transform: translate(-40%, 10%) scale(1.6); opacity: 0.95; }
+  100% { transform: translate(-140%, 30%) scale(2.8); opacity: 0; }
+}
+@keyframes cloudPartRightFront {
+  0%   { transform: translate(0, 0) scale(0.9); opacity: 0; }
+  15%  { transform: translate(5%, -2%) scale(1.1); opacity: 1; }
+  45%  { transform: translate(45%, -12%) scale(1.6); opacity: 0.95; }
+  100% { transform: translate(145%, -35%) scale(2.8); opacity: 0; }
+}
+
 /* ================ NATURE SCENE (blue theme) ================ */
 .nature-scene {
   position: fixed;
@@ -1083,8 +1233,9 @@ section {
   font-weight: 700;
 }
 
-/* Dog debugging scene */
+/* Dog debugging scene — only visible in red theme */
 .dog-scene {
+  display: none;
   position: relative;
   width: 100%;
   height: 260px;
@@ -1093,8 +1244,10 @@ section {
   overflow: hidden;
   opacity: 0;
   animation: fadeUp 1s 0.85s forwards;
-  display: flex;
   flex-direction: column;
+}
+body[data-theme="red"] .dog-scene {
+  display: flex;
 }
 .dog-scene::before {
   content: "";
@@ -1866,6 +2019,35 @@ section {
   </div>
 </div>
 
+<!-- ============ CLOUD REVEAL TRANSITION ============ -->
+<div class="cloud-reveal" id="cloudReveal" aria-hidden="true">
+  <div class="cloud-layer cloud-layer-back">
+    <svg class="reveal-cloud rc-1" viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg">
+      <path d="M60 120 Q20 120 20 90 Q20 55 60 55 Q70 20 110 22 Q140 5 175 20 Q215 8 230 38 Q280 38 280 72 Q320 72 320 105 Q320 130 290 130 L80 130 Q60 130 60 120 Z" fill="white"/>
+    </svg>
+    <svg class="reveal-cloud rc-2" viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg">
+      <path d="M55 122 Q15 122 15 88 Q15 52 58 52 Q68 18 108 20 Q142 3 178 18 Q220 6 232 36 Q285 36 285 70 Q325 70 325 108 Q325 132 292 132 L75 132 Q55 132 55 122 Z" fill="white"/>
+    </svg>
+  </div>
+  <div class="cloud-layer cloud-layer-mid">
+    <svg class="reveal-cloud rc-3" viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg">
+      <path d="M65 118 Q25 118 25 88 Q25 55 62 55 Q72 22 112 24 Q142 8 176 22 Q216 12 230 40 Q278 40 278 72 Q318 72 318 105 Q318 128 288 128 L85 128 Q65 128 65 118 Z" fill="#FDFEFF"/>
+    </svg>
+    <svg class="reveal-cloud rc-4" viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg">
+      <path d="M58 125 Q18 125 18 92 Q18 58 60 58 Q70 22 112 24 Q148 7 180 24 Q220 10 234 40 Q288 40 288 74 Q326 74 326 110 Q326 133 294 133 L78 133 Q58 133 58 125 Z" fill="#F8FBFD"/>
+    </svg>
+  </div>
+  <div class="cloud-layer cloud-layer-front">
+    <svg class="reveal-cloud rc-5" viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg">
+      <path d="M60 120 Q20 120 20 90 Q20 55 60 55 Q70 20 110 22 Q140 5 175 20 Q215 8 230 38 Q280 38 280 72 Q320 72 320 105 Q320 130 290 130 L80 130 Q60 130 60 120 Z" fill="white"/>
+    </svg>
+    <svg class="reveal-cloud rc-6" viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg">
+      <path d="M55 122 Q15 122 15 88 Q15 52 58 52 Q68 18 108 20 Q142 3 178 18 Q220 6 232 36 Q285 36 285 70 Q325 70 325 108 Q325 132 292 132 L75 132 Q55 132 55 122 Z" fill="white"/>
+    </svg>
+  </div>
+  <div class="reveal-light"></div>
+</div>
+
 <!-- Custom cursor -->
 <div class="cursor-dot"></div>
 <div class="cursor-ring"></div>
@@ -2451,13 +2633,30 @@ section {
   function dismissIntro() {
     if (dismissed) return;
     dismissed = true;
-    overlay.classList.add('done');
-    document.body.classList.remove('intro-locked');
-    // Stop video to free resources
+
+    const cloudReveal = document.getElementById('cloudReveal');
+
+    // Phase 1: Trigger cloud reveal (clouds enter from below/sides covering video)
+    if (cloudReveal) {
+      cloudReveal.classList.add('active');
+    }
+
+    // Phase 2: As clouds fill in (~500ms), fade video overlay out behind them
+    setTimeout(() => {
+      overlay.classList.add('done');
+      document.body.classList.remove('intro-locked');
+    }, 500);
+
+    // Phase 3: Free video resources once overlay is gone
     setTimeout(() => {
       try { video.pause(); video.removeAttribute('src'); video.load(); } catch(e) {}
       overlay.remove();
-    }, 1000);
+    }, 1500);
+
+    // Phase 4: Cloud reveal finishes (2.1s total) - it auto-hides via CSS animation
+    setTimeout(() => {
+      if (cloudReveal) cloudReveal.remove();
+    }, 2400);
   }
 
   // When video is ready to play
@@ -2882,6 +3081,12 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   function animate() {
     const dt = clock.getDelta();
     t += dt;
+
+    // Only render dog scene when red theme is active (save GPU)
+    if (document.body.getAttribute('data-theme') !== 'red') {
+      requestAnimationFrame(animate);
+      return;
+    }
 
     // Head banging cycle (~1.2 seconds per bang)
     const cycle = 1.3;
